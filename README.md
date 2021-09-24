@@ -8,7 +8,7 @@ attempts.
 
 The first step is that I wrote [`hex0_1.c`](hex0_1.c), a simple implementation of hex0 in C.
 
-## Building some of stage0 programs
+## Building some of the stage0 programs
 
 Next, I decided to build some of the first programs from stage0. For this I wrote a simple
 bash script, called [`build.sh`](build.sh). It requires a BrainFuck compiler with the name
@@ -17,5 +17,12 @@ and a program generated with [BF Generator](https://www.iwriteiam.nl/BFgen.html)
 her as [`hex0.bf`](hex0.bf). The scipt assumes that in the parent directory the repositories 
 [`live-bootstrap`](https://github.com/fosslinux/live-bootstrap) and
 [`stage0-posix`](https://github.com/oriansj/stage0-posix) have been cloned.
+
+## hex0_2.h/c
+
+I decided to rewrite `hex0_1.c` into a version using very basic operations represented by
+macros for which it would be relatively easy to write a compiler. This resulted in a header
+file [`hex0_2.h`](hex0_2.h) with all the macro definitions and a program file [`hex0_2.h`](hex0_2.h),
+which is probably easy to parse and compile to assembly. The program can be compiled with gcc.
 
 
