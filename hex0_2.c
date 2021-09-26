@@ -1,16 +1,16 @@
 #include "hex0_2.h"
 
-int input_fh;
-int output_fh;
+VAR(input_fh)
+VAR(output_fh)
 
-int input_ch;
+VAR(input_ch)
 
-int hex_result;
+VAR(hex_result)
 
-int output_ch;
-int toggle;
+VAR(output_ch)
+VAR(toggle)
 
-int main(int argc, char *argv[])
+MAIN
 {
 	LOAD(0) STORE(toggle)
 

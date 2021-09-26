@@ -12,6 +12,9 @@
 
 int reg;
 
+#define MAIN int main(int argc, char *argv[])
+#define VAR(V) int V;
+
 #define NEXT_ARG argv++;
 #define STORE(V) V = reg;
 #define LOAD(V) reg = V;
