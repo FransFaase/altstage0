@@ -25,4 +25,7 @@ macros for which it would be relatively easy to write a compiler. This resulted 
 file [`hex0_2.h`](hex0_2.h) with all the macro definitions and a program file [`hex0_2.h`](hex0_2.h),
 which is probably easy to parse and compile to assembly. The program can be compiled with gcc.
 
+## cc1.c
 
+A compiler to compile hex0_2.c to M1. This is still work in progress.
+When I am finished, I am thinking about extending it such that it can compile itself.
