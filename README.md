@@ -27,5 +27,8 @@ which is probably easy to parse and compile to assembly. The program can be comp
 
 ## cc1.c
 
-A compiler to compile hex0_2.c to M1. This is still work in progress.
+I decided to write a compiler, [`cc1.c`](cc1.c), that can compile `hex0_2.c` to M1. The
+idea is to make this compiler as simple as possible, assuming that the input is correct.
+The compiler is an almost a one-on-one translation.
+This is still work in progress.
 When I am finished, I am thinking about extending it such that it can compile itself.
