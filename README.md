@@ -22,13 +22,21 @@ her as [`hex0.bf`](hex0.bf). The scipt assumes that in the parent directory the 
 
 I decided to rewrite `hex0_1.c` into a version using very basic operations represented by
 macros for which it would be relatively easy to write a compiler. This resulted in a header
-file [`hex0_2.h`](hex0_2.h) with all the macro definitions and a program file [`hex0_2.h`](hex0_2.h),
+file [`hex0_2.h`](hex0_2.h) with all the macro definitions and a program file [`hex0_2.c`](hex0_2.c),
 which is probably easy to parse and compile to assembly. The program can be compiled with gcc.
 
 ## cc1.c
 
 I decided to write a compiler, [`cc1.c`](cc1.c), that can compile `hex0_2.c` to M1. The
 idea is to make this compiler as simple as possible, assuming that the input is correct.
-The compiler is an almost a one-on-one translation.
-This is still work in progress.
-When I am finished, I am thinking about extending it such that it can compile itself.
+The compiler is an almost a one-on-one translation. I wrote a bash script, called
+[`cc1_hex0_2.sh`](cc1_hex0_2.sh), that compiles `cc1.c` with gcc, uses it to compile
+`hex0_2.c` to `hex0_2.M1` and uses `catm`, `M0`, `hex2-0` and some files from `live-bootstrap`
+and `stage0-posix` to create the `hex0_2` executable.
+
+I made extensive use of the [edb](https://github.com/eteran/edb-debugger) debugger to get
+the cc1.c to work correctly. I also made use of:
+* [Online x86 / x64 Assembler and Disassembler](https://defuse.ca/online-x86-assembler.htm)
+* The book _De INTEL 8036_ by Lance A. Leventhal.
+* [x86 and amd64 instruction reference](https://www.felixcloutier.com/x86/)
+

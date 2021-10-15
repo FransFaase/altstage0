@@ -74,20 +74,25 @@ int main(int argc, char *argv[])
 	nr_var_decls = 0;
 	
 	printf(
+		"DEFINE JUMP_L 0F8C\n"
+		"DEFINE JUMP_G 0F8F\n"
+	);		
+	
+	printf(
 		":f_next_arg\n"
-		"LOAD_BASE_ADDRESS_eax %%-8\n"
+		"LOAD_IMMEDIATE_eax &argv\n"
 		"PUSH_eax\n"
-		"LOAD_BASE_ADDRESS_eax %%-8\n"
 		"LOAD_INTEGER\n"
-		"LOAD_IMMEDIATE_ebx %%1\n"
-		"ADD_ebx_to_eax\n"
+		"ADD_IMMEDIATE_to_eax %%4\n"
 		"POP_ebx\n"
 		"STORE_INTEGER\n"
 		"RETURN\n"
 	);
 	printf(
 		":f_open_arg_as_input\n"
-		"LOAD_BASE_ADDRESS_eax %%-8\n"
+		"LOAD_IMMEDIATE_eax &argv\n"
+		"LOAD_INTEGER\n"
+		"LOAD_INTEGER\n"
 		"PUSH_eax\n"
 		"POP_ebx\n"
 		"LOAD_IMMEDIATE_ecx %%0\n"
@@ -100,7 +105,9 @@ int main(int argc, char *argv[])
 	);
 	printf(
 		":f_open_arg_as_output\n"
-		"LOAD_BASE_ADDRESS_eax %%-8\n"
+		"LOAD_IMMEDIATE_eax &argv\n"
+		"LOAD_INTEGER\n"
+		"LOAD_INTEGER\n"
 		"PUSH_eax\n"
 		"POP_ebx\n"
 		"LOAD_IMMEDIATE_ecx %%577\n"
@@ -113,12 +120,14 @@ int main(int argc, char *argv[])
 	);
 	printf(
 		":f_read_ch\n"
-		"LOAD_IMMEDIATE_ebx &input_fh\n"
+		"LOAD_IMMEDIATE_eax &input_fh\n"
+		"LOAD_INTEGER\n"
+		"COPY_eax_to_ebx\n"
 		"LOAD_IMMEDIATE_ecx &input_ch\n"
 		"LOAD_IMMEDIATE_edx %%1\n"
 		"LOAD_IMMEDIATE_eax %%3\n"
 		"INT_80\n"
-		"TEST"
+		"TEST\n"
 		"JUMP_NE8 !f_read_ch_done\n"
 		"LOAD_IMMEDIATE_eax %%0\n"
 		"LOAD_IMMEDIATE_ebx &input_ch\n"
@@ -128,11 +137,13 @@ int main(int argc, char *argv[])
 	);
 	printf(
 		":f_write_ch\n"
-		"LOAD_IMMEDIATE_ebx &output_fh\n"
+		"LOAD_IMMEDIATE_eax &output_fh\n"
+		"LOAD_INTEGER\n"
+		"COPY_eax_to_ebx\n"
 		"LOAD_IMMEDIATE_ecx &output_ch\n"
-		"LOAD_INTEGER_ecx\n"
 		"LOAD_IMMEDIATE_edx %%1\n"
 		"LOAD_IMMEDIATE_eax %%4\n"
+		"INT_80\n"
 		"RETURN\n"
 	);
 
@@ -162,6 +173,10 @@ int main(int argc, char *argv[])
 			else if (strcmp(token, "MAIN") == 0)
 			{
 				printf(":FUNCTION_main\n");
+				printf("LOAD_BASE_ADDRESS_eax %%-8\n");
+				printf("LOAD_INTEGER\n");
+				printf("LOAD_IMMEDIATE_ebx &argv\n");
+				printf("STORE_INTEGER\n");
 			}
 			else if (strcmp(token, "STORE") == 0)
 			{
@@ -238,14 +253,14 @@ int main(int argc, char *argv[])
 			{
 				parse_token();
 				parse_token();
-				printf("CMP  ; JUMP_GT(%s)\nSETG\nMOVEZBL\nTEST\nJUMP_EQ %%%s\n", token, token);
+				printf("TEST  ; JUMP_GT(%s)\nJUMP_G %%%s\n", token, token);
 				parse_token();
 			}
 			else if (strcmp(token, "JUMP_LT") == 0)
 			{
 				parse_token();
 				parse_token();
-				printf("CMP  ; JUMP_LT(%s)\nSETL\nMOVEZBL\nTEST\nJUMP_EQ %%%s\n", token, token);
+				printf("TEST  ; JUMP_LT(%s)\nJUMP_L %%%s\n", token, token);
 				parse_token();
 			}
 			else if (strcmp(token, "RETURN") == 0)
@@ -305,8 +320,8 @@ int main(int argc, char *argv[])
 	}
 	printf("\n\n");
 	
-	
+	printf(":argv\nNULL\n");
 	for (i = 0; i < nr_var_decls; i++)
-		printf(":%s\n00000000\n", var_decls[i]);
+		printf(":%s\nNULL\n", var_decls[i]);
 	printf(":ELF_end\n");
 }
