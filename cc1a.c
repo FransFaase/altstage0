@@ -74,8 +74,51 @@ int main(int argc, char *argv[])
 	nr_var_decls = 0;
 	
 	printf(
+		"DEFINE LOAD_IMMEDIATE_eax B8\n"
+		"DEFINE LOAD_IMMEDIATE_ebx BB\n"
+		"DEFINE LOAD_IMMEDIATE_ecx B9\n"
+		"DEFINE LOAD_IMMEDIATE_edx BA\n"
+		"DEFINE LOAD_INTEGER 8B00\n"
+		"DEFINE LOAD_BASE_ADDRESS_eax 8D85\n"
+		"DEFINE COPY_eax_to_ebx 89C3\n"
+		"DEFINE MOVE_ebx_to_eax 89D8\n"
+		"DEFINE PUSH_eax 50\n"
+		"DEFINE POP_ebx 5B\n"
+		"DEFINE ADD_IMMEDIATE_to_eax 81C0\n"
+		"DEFINE SUBTRACT_eax_from_ebx_into_ebx 29C3\n"
+		"DEFINE ADD_ebx_to_eax 01D8\n"
+		"DEFINE MULTIPLY_eax_by_ebx_into_eax F7EB\n"
+		"DEFINE STORE_INTEGER 8903\n"
+		"DEFINE TEST 85C0\n"
+		"DEFINE JUMP E9\n"
+		"DEFINE JUMP_NE8 75\n"
+		"DEFINE JUMP_EQ 0F84\n"
+		"DEFINE JUMP_NE 0F85\n"
 		"DEFINE JUMP_L 0F8C\n"
 		"DEFINE JUMP_G 0F8F\n"
+		"DEFINE CALL_IMMEDIATE E8\n"
+		"DEFINE RETURN C3\n"
+		"DEFINE INT_80 CD80\n"
+		"DEFINE NULL 00000000\n"
+		"DEFINE COPY_esp_to_ebp 89E5\n"
+		"\n"
+	);
+	printf(
+	    ":_start\n"
+		"COPY_esp_to_ebp             ; Protect esp\n"
+		"\n"
+		";; Prepare argv\n"
+		"LOAD_BASE_ADDRESS_eax %%4    ; ARGV_address = EBP + 4\n"
+		"LOAD_IMMEDIATE_ebx &argv\n"
+		"STORE_INTEGER\n"
+		"\n"
+		";; Perform the main loop\n"
+		"CALL_IMMEDIATE %%FUNCTION_main\n"
+		"\n"
+		";; Exit to kernel\n"
+		"COPY_eax_to_ebx             ; Using the return code given by main\n"
+		"LOAD_IMMEDIATE_eax %%1       ; Syscall exit\n"
+		"INT_80                      ; Exit with that code\n"
 	);
 	printf(
 		":f_next_arg\n"
@@ -92,8 +135,7 @@ int main(int argc, char *argv[])
 		"LOAD_IMMEDIATE_eax &argv\n"
 		"LOAD_INTEGER\n"
 		"LOAD_INTEGER\n"
-		"PUSH_eax\n"
-		"POP_ebx\n"
+		"COPY_eax_to_ebx\n"
 		"LOAD_IMMEDIATE_ecx %%0\n"
 		"LOAD_IMMEDIATE_edx %%0\n"
 		"LOAD_IMMEDIATE_eax %%5\n"
@@ -107,8 +149,7 @@ int main(int argc, char *argv[])
 		"LOAD_IMMEDIATE_eax &argv\n"
 		"LOAD_INTEGER\n"
 		"LOAD_INTEGER\n"
-		"PUSH_eax\n"
-		"POP_ebx\n"
+		"COPY_eax_to_ebx\n"
 		"LOAD_IMMEDIATE_ecx %%577\n"
 		"LOAD_IMMEDIATE_edx %%384\n"
 		"LOAD_IMMEDIATE_eax %%5\n"
@@ -172,10 +213,10 @@ int main(int argc, char *argv[])
 			else if (strcmp(token, "MAIN") == 0)
 			{
 				printf(":FUNCTION_main\n");
-				printf("LOAD_BASE_ADDRESS_eax %%-8\n");
-				printf("LOAD_INTEGER\n");
-				printf("LOAD_IMMEDIATE_ebx &argv\n");
-				printf("STORE_INTEGER\n");
+				//printf("LOAD_BASE_ADDRESS_eax %%-8\n");
+				//printf("LOAD_INTEGER\n");
+				//printf("LOAD_IMMEDIATE_ebx &argv\n");
+				//printf("STORE_INTEGER\n");
 			}
 			else if (strcmp(token, "STORE") == 0)
 			{
@@ -201,7 +242,7 @@ int main(int argc, char *argv[])
 				if (token[0] == '0')
 					printf("LOAD_IMMEDIATE_ebx %%%d  ; ADD(%d)\n", token_val, token_val);
 				else
-					printf("PUSH_eax  ; ADD(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\nPOP_ebx\n", token, token);
+					printf("COPY_eax_to_ebx  ; ADD(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\n", token, token);
 				printf("ADD_ebx_to_eax\n");
 				parse_token();
 			}
@@ -210,10 +251,10 @@ int main(int argc, char *argv[])
 				parse_token();
 				parse_token();
 				if (token[0] == '0')
-					printf("PUSH_eax  ; SUB(%d)\nLOAD_IMMEDIATE_eax %%%d\n", token_val, token_val);
+					printf("COPY_eax_to_ebx  ; SUB(%d)\nLOAD_IMMEDIATE_eax %%%d\n", token_val, token_val);
 				else
-					printf("PUSH_eax  ; SUB(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\n", token, token);
-				printf("POP_ebx\nSUBTRACT_eax_from_ebx_into_ebx\nMOVE_ebx_to_eax\n");
+					printf("COPY_eax_to_ebx  ; SUB(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\n", token, token);
+				printf("SUBTRACT_eax_from_ebx_into_ebx\nMOVE_ebx_to_eax\n");
 				parse_token();
 			}
 			else if (strcmp(token, "MUL") == 0)
@@ -221,10 +262,10 @@ int main(int argc, char *argv[])
 				parse_token();
 				parse_token();
 				if (token[0] == '0')
-					printf("PUSH_eax  ; SUB(%d)\nLOAD_IMMEDIATE_eax %%%d\n", token_val, token_val);
+					printf("COPY_eax_to_ebx  ; SUB(%d)\nLOAD_IMMEDIATE_eax %%%d\n", token_val, token_val);
 				else
-					printf("PUSH_eax  ; SUB(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\n", token, token);
-				printf("POP_ebx\nMULTIPLY_eax_by_ebx_into_eax\n");
+					printf("COPY_eax_to_ebx  ; SUB(%s)\nLOAD_IMMEDIATE_eax &%s\nLOAD_INTEGER\n", token, token);
+				printf("MULTIPLY_eax_by_ebx_into_eax\n");
 				parse_token();
 			}
 			else if (strcmp(token, "JUMP") == 0)

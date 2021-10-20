@@ -40,3 +40,9 @@ the cc1.c to work correctly. I also made use of:
 * The book _De INTEL 8036_ by Lance A. Leventhal.
 * [x86 and amd64 instruction reference](https://www.felixcloutier.com/x86/)
 
+## cc1a.c
+
+The program [`cc1a.c`](cc1a.c) is a slightly adapted version of `cc1.c` where the files from
+`live-bootstrap` are partially incorporated (and slightly modified) into the source of `cc1a.c`.
+The generated code is slight more compact.
+The necessary compile steps are found in [`cc1a_hex0_2.sh`](cc1a_hex0_2.sh).
